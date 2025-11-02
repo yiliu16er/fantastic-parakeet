@@ -1,0 +1,1123 @@
+  <!doctype html>
+  <html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>四格养成·六合一工具箱（ABC+D+E 强化版）</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- iOS 添加到主屏幕适配（新增） -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="四格养成工具箱">
+    <!-- PWA manifest（内联，最小化，保证主屏幕名称与图标） -->
+    <link rel="manifest" href="data:application/manifest+json,{&quot;name&quot;:&quot;四格养成工具箱&quot;,&quot;short_name&quot;:&quot;四格工具箱&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0b0b0b&quot;,&quot;theme_color&quot;:&quot;#22c55e&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;apple-touch-icon.png&quot;,&quot;sizes&quot;:&quot;180x180&quot;,&quot;type&quot;:&quot;image/png&quot;}]}">
+    <!-- 主屏幕图标（黑底绿色渐变工具箱） -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<?xml version='1.0' encoding='UTF-8'?><svg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0%' stop-color='%2322c55e'/><stop offset='100%' stop-color='%2364dd86'/></linearGradient></defs><rect x='0' y='0' width='180' height='180' rx='36' fill='%230b0b0b'/><rect x='24' y='52' width='132' height='88' rx='16' fill='url(%23g)'/><rect x='48' y='32' width='84' height='28' rx='10' fill='%231a1a1a'/><path d='M48 84h84' stroke='%23ffffff' stroke-width='5' stroke-linecap='round'/><circle cx='60' cy='116' r='8' fill='%23ffffff'/><circle cx='90' cy='116' r='8' fill='%23ffffff'/><circle cx='120' cy='116' r='8' fill='%23ffffff'/></svg>">
+    <meta name="theme-color" content="#0b0b0b">
+
+    <style>
+      :root{
+        --bg:#fafafa; --card:#ffffff; --ink:#111; --muted:#666; --line:#e8e8e8;
+        --brand:#4F46E5; --brand-ink:#fff; --accent:#10B981; --warn:#EF4444; --info:#0ea5e9;
+      }
+      *{ box-sizing:border-box; }
+      html,body{ margin:0; padding:0; background:var(--bg); color:var(--ink); font-family: ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC","Helvetica Neue",Arial,"Noto Sans","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;}
+      h1,h2,h3{ margin:0 0 12px;}
+      .container{ max-width:1180px; margin:20px auto; padding:0 16px 40px;}
+      .tabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;}
+      .tab{ padding:8px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; cursor:pointer; font-weight:600;}
+      .tab.active{ background:var(--brand); color:var(--brand-ink); border-color:transparent;}
+      .card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px;}
+      .muted{ color:var(--muted); font-size:13px;}
+      .pill{ padding:4px 8px; border-radius:999px; font-size:12px; border:1px solid var(--line); background:#fff;}
+      .btn,button{ padding:8px 12px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer;}
+      .primary{ background:var(--brand); color:#fff; border-color:transparent;}
+      .success{ background:var(--accent); color:#fff; border-color:transparent;}
+      .danger{ background:var(--warn); color:#fff; border-color:transparent;}
+      .hint{ font-size:12px; color:#555;}
+      .kbd{ padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:#fff; font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; font-size:12px;}
+      .row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+      .two-col{ display:grid; grid-template-columns: 1.1fr 1fr; gap:16px;}
+      .three-col{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:16px;}
+      .mini-list{ border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+      .mini-list .head, .mini-list .item{ display:grid; grid-template-columns: 110px 1fr; gap:10px; padding:8px;}
+      .mini-list .head{ background:#f9fafb; font-weight:700;}
+      .mini-list .item{ border-top:1px solid var(--line); font-size:14px;}
+      .sep{ height:1px; background:var(--line); margin:8px 0;}
+      .grid-12{ display:grid; grid-template-columns: repeat(4, 1fr); gap:8px;}
+      .grid-12 .cell{ border:1px solid var(--line); border-radius:8px; padding:8px; background:#fff;}
+      .soft{ color:#333;}
+      .table{ width:100%; border-collapse: collapse; font-size:14px;}
+      .table th,.table td{ border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top;}
+      .table th{ background:#f9fafb;}
+      .chips{ display:flex; flex-wrap:wrap; gap:6px;}
+      .chip{ border:1px solid var(--line); padding:2px 6px; border-radius:999px; font-size:12px; background:#fff;}
+      .toolbar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+      .grow{ flex:1;}
+      .tag-btn{ font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--line); background:#fff; cursor:pointer;}
+      .modal{ position:fixed; inset:0; background:rgba(0,0,0,.35); display:none; align-items:center; justify-content:center; padding:16px; z-index:1000;}
+      .dialog{ background:#fff; width: min(920px, 96vw); max-height: 88vh; overflow:auto; border-radius:12px; border:1px solid var(--line); padding:12px;}
+      .dialog h3{ margin:6px 0 8px;}
+      .table-compact th,.table-compact td{ font-size:12px; padding:4px 6px;}
+      .right{ text-align:right;}
+      .range{ width:160px;}
+      @media (max-width:1080px){
+        .two-col{ grid-template-columns: 1fr;}
+        .grid-12{ grid-template-columns: repeat(2, 1fr);}
+        .three-col{ grid-template-columns: 1fr;}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>四格养成六合一工具箱（增强版）</h1>
+      <div class="muted">计划、封面、订阅、模板打印、读者词库、档位与日历 + 计划草案 A+B+C+D+E 全量增强。</div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="plan">学习进度表</div>
+        <div class="tab" data-tab="cover">首图模板</div>
+        <div class="tab" data-tab="subs">订阅面板</div>
+        <div class="tab" data-tab="prints">模板打印</div>
+        <div class="tab" data-tab="lexicon">读者词库</div>
+        <div class="tab" data-tab="pace">档位与日历</div>
+      </div>
+
+      <!-- 档位与日历 -->
+      <section id="pace" class="tab-pane" style="display:none;">
+        <div class="two-col">
+          <!-- 左列 -->
+          <div class="card">
+            <h2>节奏档位与每日清单</h2>
+            <div class="row toolbar">
+              <label class="pill">选择档位</label>
+              <select id="paceMode">
+                <option value="standard">标准档（每天60–90分钟）</option>
+                <option value="fast">加速档（每天90–120分钟）</option>
+              </select>
+              <label class="pill">当周起始日</label>
+              <input id="weekStart" type="date">
+              <span class="grow"></span>
+              <button id="genWeek" class="primary">生成当周每日清单</button>
+              <button id="pushToBoard" class="success">写入“本周看板”</button>
+            </div>
+            <div class="row toolbar">
+              <label class="pill">工作日时间段</label>
+              <input id="wkTime" placeholder="如 20:30-22:00">
+              <label class="pill">周末时间段</label>
+              <input id="weTime" placeholder="如 14:00-16:30">
+            </div>
+
+            <div class="section-title">当周每日清单</div>
+            <div class="mini-list" id="dayList">
+              <div class="head"><div>星期</div><div>任务</div></div>
+            </div>
+            <div class="hint" style="margin-top:8px;">周节奏固定：周一结构、周三反转、周五治愈、周末复盘/选题。</div>
+
+            <div class="sep"></div>
+
+            <h2>导出到日历（.ics） + 模板库 + 主题月 + Notion/CSV + 筛选器</h2>
+            <div class="row toolbar">
+              <label class="pill">提醒提前量</label>
+              <select id="alarmMin">
+                <option value="10">10分钟</option>
+                <option value="30">30分钟</option>
+                <option value="60" selected>60分钟</option>
+              </select>
+              <label class="pill">导出范围</label>
+              <select id="weeksCount">
+                <option value="1" selected>1周</option>
+                <option value="2">2周</option>
+                <option value="4">4周</option>
+                <option value="8">8周</option>
+                <option value="12">12周</option>
+              </select>
+              <label class="pill">文件名前缀</label>
+              <input id="filePrefix" value="四格养成" style="width:120px;">
+            </div>
+
+            <div class="section-title">提醒语模板库</div>
+            <div class="hint">占位符：{weekday}、{date}、{time}、{mode}、{task}、{detail}、{tz}、{keywords}、{tuesdayStars}、{wedKeywords}、{friKeywords}、{monthTheme}</div>
+            <div class="row" style="align-items:flex-start; gap:10px;">
+              <div style="flex:1;">
+                <div class="hint">事件标题模板</div>
+                <textarea id="tplTitle" rows="2" class="kbd" style="width:100%">{monthTheme}{weekday}｜{task}（{mode}）</textarea>
+              </div>
+              <div style="flex:1;">
+                <div class="hint">事件描述模板</div>
+                <textarea id="tplDesc" rows="7" class="kbd" style="width:100%">时间：{date} {time}（{tz})
+任务：{task}
+细节：{detail}
+关键词：{keywords}
+周二星标词：{tuesdayStars}
+周三（反转）候选：{wedKeywords}
+周五（治愈）候选：{friKeywords}
+主题月：{monthTheme}</textarea>
+              </div>
+            </div>
+
+            <div class="section-title">主题月设置</div>
+            <div class="row toolbar">
+              <label class="pill">本月主题名</label>
+              <input id="monthThemeName" placeholder="如 信息型月 / 情绪强化月">
+              <label class="pill">显示方式</label>
+              <select id="monthThemeMode">
+                <option value="title" selected>仅标题</option>
+                <option value="desc">仅描述</option>
+                <option value="both">标题与描述</option>
+                <option value="off">关闭</option>
+              </select>
+              <label class="pill">前缀样式</label>
+              <select id="monthThemeStyle">
+                <option value="bracket" selected>【主题】</option>
+                <option value="hash">#主题</option>
+                <option value="plain">主题：</option>
+              </select>
+            </div>
+
+            <div class="section-title">每月主题轮换器</div>
+            <div class="row">
+              <input type="checkbox" id="rotateToggle" checked>
+              <label for="rotateToggle">启用按自然月自动套用主题（可被“本月主题名”临时覆盖）</label>
+              <button class="btn" id="applyCurrentMonth">一键应用当月主题为“本月主题名”</button>
+            </div>
+            <div class="grid-12" id="themeGrid"></div>
+            <div class="hint">默认轮换：1开篇设定、2信息型、3冲突强化、4治愈表达、5镜头语言、6对白精炼、7风格变奏、8场景空间、9角色塑造、10叙事结构、11效率冲刺、12年度复盘。</div>
+
+            <div class="sep"></div>
+
+            <div class="section-title">关键词注入设置（全局/专项）</div>
+            <div class="row toolbar">
+              <label class="pill">全局来源策略</label>
+              <select id="kwStrategy">
+                <option value="random" selected>随机</option>
+                <option value="star-priority">星标优先</option>
+                <option value="star-only">只用星标</option>
+              </select>
+              <label class="pill">注入数量</label>
+              <select id="kwCount">
+                <option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option>
+              </select>
+              <span class="grow"></span>
+              <span class="hint">快捷筛选：</span>
+              <button class="tag-btn" data-quick-tag="信息型">信息型</button>
+              <button class="tag-btn" data-quick-tag="冲突">冲突</button>
+              <button class="tag-btn" data-quick-tag="治愈">治愈</button>
+              <button class="tag-btn" data-quick-tag="风格">风格</button>
+            </div>
+            <div class="row toolbar">
+              <input type="checkbox" id="tueStarsToggle" checked>
+              <label for="tueStarsToggle">将“本周星标词（★★及以上）”写入“周二｜拆解与点子”</label>
+              <label class="pill">数量</label>
+              <select id="tueStarsCount"><option>1</option><option selected>3</option><option>5</option></select>
+              <label class="pill">合并方式</label>
+              <select id="tueMergeMode">
+                <option value="append" selected>追加到{keywords}</option>
+                <option value="replace">替换{keywords}</option>
+              </select>
+            </div>
+            <div class="row toolbar">
+              <input type="checkbox" id="wedToggle" checked>
+              <label for="wedToggle">为“周三｜反转四格成稿”注入“冲突词”集合</label>
+              <label class="pill">策略</label>
+              <select id="wedStrategy">
+                <option value="random">随机</option>
+                <option value="star-priority">星标优先</option>
+                <option value="star-only">只用星标</option>
+                <option value="tag:冲突" selected>按标签：冲突</option>
+              </select>
+              <label class="pill">数量</label>
+              <select id="wedCount"><option>1</option><option selected>3</option><option>5</option></select>
+              <label class="pill">合并方式</label>
+              <select id="wedMergeMode">
+                <option value="append" selected>追加到{keywords}</option>
+                <option value="replace">替换{keywords}</option>
+              </select>
+            </div>
+            <div class="row toolbar">
+              <input type="checkbox" id="friToggle" checked>
+              <label for="friToggle">为“周五｜治愈四格成稿”注入“治愈词”集合</label>
+              <label class="pill">策略</label>
+              <select id="friStrategy">
+                <option value="random">随机</option>
+                <option value="star-priority">星标优先</option>
+                <option value="star-only">只用星标</option>
+                <option value="tag:治愈" selected>按标签：治愈</option>
+              </select>
+              <label class="pill">数量</label>
+              <select id="friCount"><option>1</option><option selected>3</option><option>5</option></select>
+              <label class="pill">合并方式</label>
+              <select id="friMergeMode">
+                <option value="append" selected>追加到{keywords}</option>
+                <option value="replace">替换{keywords}</option>
+              </select>
+            </div>
+
+            <div class="sep"></div>
+
+            <div class="section-title">导出筛选器</div>
+            <div class="row toolbar">
+              <label class="pill">按星期</label>
+              <div id="weekdayFilters" class="row" style="gap:6px;">
+                <label><input type="checkbox" data-dow="1" checked> 周一</label>
+                <label><input type="checkbox" data-dow="2" checked> 周二</label>
+                <label><input type="checkbox" data-dow="3" checked> 周三</label>
+                <label><input type="checkbox" data-dow="4" checked> 周四</label>
+                <label><input type="checkbox" data-dow="5" checked> 周五</label>
+                <label><input type="checkbox" data-dow="6" checked> 周六</label>
+                <label><input type="checkbox" data-dow="0" checked> 周日</label>
+              </div>
+            </div>
+            <div class="row toolbar">
+              <label class="pill">工作/周末</label>
+              <select id="wdWeFilter">
+                <option value="all" selected>全部</option>
+                <option value="wd">仅工作日</option>
+                <option value="we">仅周末</option>
+              </select>
+              <label class="pill">档位</label>
+              <select id="modeFilter">
+                <option value="all" selected>全部</option>
+                <option value="standard">仅标准档</option>
+                <option value="fast">仅加速档</option>
+              </select>
+            </div>
+            <div class="row toolbar">
+              <label class="pill">任务类型</label>
+              <div id="taskFilters" class="row" style="gap:6px;">
+                <label><input type="checkbox" data-key="结构" checked> 结构</label>
+                <label><input type="checkbox" data-key="拆解" checked> 拆解</label>
+                <label><input type="checkbox" data-key="反转" checked> 反转</label>
+                <label><input type="checkbox" data-key="优化" checked> 优化</label>
+                <label><input type="checkbox" data-key="治愈" checked> 治愈</label>
+                <label><input type="checkbox" data-key="复盘" checked> 复盘</label>
+                <label><input type="checkbox" data-key="选题" checked> 选题</label>
+              </div>
+            </div>
+
+            <div class="sep"></div>
+
+            <div class="section-title">导出</div>
+            <div class="row toolbar">
+              <button class="primary" id="exportICS">导出 .ics</button>
+              <button class="btn" id="exportCSV">导出 CSV</button>
+              <label class="pill">预览高度</label>
+              <input id="previewHeight" type="range" min="120" max="520" value="280" class="range">
+              <span class="hint" id="previewHeightVal">280px</span>
+            </div>
+            <pre id="icsPreview" class="kbd" style="white-space:pre-wrap; max-height:280px; overflow:auto;"></pre>
+
+            <div class="section-title">Notion 导入提示</div>
+            <ol class="hint" style="padding-left:16px;">
+              <li>点击“导出 CSV”得到文件。</li>
+              <li>在 Notion 建数据库页面，点击 Import → CSV。</li>
+              <li>字段映射建议：Title ← Summary；Date ← Start/End；Tags ← Mode, Weekday；Notes ← Description。</li>
+            </ol>
+
+            <div class="sep"></div>
+
+            <div class="section-title">Notion/CSV 回填</div>
+            <div class="row toolbar">
+              <input type="file" id="csvFile" accept=".csv,text/csv">
+              <button class="btn" id="previewCSV">预览 CSV</button>
+              <button class="btn" id="applyToLex" disabled>应用到词库</button>
+              <button class="btn" id="applyToPlan" disabled>生成计划草案</button>
+            </div>
+            <pre id="csvPreview" class="kbd" style="white-space:pre; max-height:240px; overflow:auto;"></pre>
+            <div class="hint">回填：相同词合并标签取最高星；同日期+时间+标题的计划只保留一次。</div>
+          </div>
+
+          <!-- 右列：计划草案面板 A+B+C+D+E -->
+          <div class="card">
+            <h2>计划草案面板（A+B+C+D+E）</h2>
+            <div class="three-col">
+              <div>
+                <div class="section-title">草案列表</div>
+                <div class="toolbar">
+                  <button class="btn" id="reloadDrafts">刷新</button>
+                  <button class="btn" id="clearDrafts">清空草案</button>
+                  <button class="btn" id="snapShot">保存快照</button>
+                  <select id="undoLevel" class="pill">
+                    <option value="1">回滚至 上一步</option>
+                    <option value="2">回滚至 上上步</option>
+                    <option value="3">回滚至 第三步</option>
+                  </select>
+                  <button class="btn danger" id="undoApply">撤销</button>
+                </div>
+                <div class="toolbar">
+                  <button class="btn" id="selAll">全选</button>
+                  <button class="btn" id="selNone">全不选</button>
+                  <button class="btn" id="selReverse">反选</button>
+                </div>
+                <table class="table" id="draftTable">
+                  <thead>
+                    <tr><th>#</th><th>Summary</th><th>Date</th><th>Start</th><th>End</th><th>Tags/Star</th></tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+                <div class="hint">来源：CSV → “生成计划草案”。支持去重/批量编辑与智能排期。</div>
+              </div>
+              <div>
+                <div class="section-title">字段映射与写入策略</div>
+                <div class="row toolbar">
+                  <label class="pill">Summary →</label>
+                  <select id="mapSummary">
+                    <option value="title" selected>覆盖标题</option>
+                    <option value="append">合并到原标题后</option>
+                    <option value="task">作为 {task}</option>
+                  </select>
+                  <label class="pill">合并连接符</label>
+                  <select id="mergeSep">
+                    <option value="｜">｜</option>
+                    <option value=" + "> + </option>
+                    <option value=" · " selected> · </option>
+                    <option value="custom">自定义</option>
+                  </select>
+                  <input id="mergeSepCustom" placeholder="自定义连接符" style="width:120px; display:none;">
+                </div>
+                <div class="row toolbar">
+                  <label class="pill">Description →</label>
+                  <select id="mapDesc">
+                    <option value="detail" selected>作为 {detail}</option>
+                    <option value="append">追加到描述末尾</option>
+                    <option value="ignore">忽略</option>
+                  </select>
+                  <label class="pill">写入策略</label>
+                  <select id="applyStrategy">
+                    <option value="overwrite" selected>覆盖同日同时间（仅占位）</option>
+                    <option value="appendTitle">同槽位合并标题</option>
+                    <option value="emptyOnly">仅空位插入</option>
+                  </select>
+                </div>
+                <div class="row toolbar">
+                  <label class="pill">最大合并段数</label>
+                  <select id="maxMergeParts">
+                    <option>1</option><option selected>2</option><option>3</option><option>4</option>
+                  </select>
+                  <input type="checkbox" id="multiAppend" checked>
+                  <label for="multiAppend">允许多次合并（受最大段数限制）</label>
+                  <input type="checkbox" id="applyExportICS"> 同步导出 .ics
+                  <input type="checkbox" id="applyExportCSV"> 同步导出 CSV
+                </div>
+                <div class="row toolbar">
+                  <button class="primary" id="previewApply">预览差异</button>
+                  <button class="success" id="applyDrafts">将选中草案写入当周</button>
+                </div>
+
+                <div class="sep"></div>
+
+                <div class="section-title">智能排期（B）</div>
+                <div class="row toolbar">
+                  <label class="pill">每日最多插入</label>
+                  <select id="smartDailyLimit">
+                    <option selected>1</option><option>2</option><option>3</option>
+                  </select>
+                  <label class="pill">错位步长</label>
+                  <select id="offsetStep">
+                    <option selected value="30">30 分钟</option>
+                    <option value="45">45 分钟</option>
+                    <option value="60">60 分钟</option>
+                  </select>
+                  <label class="pill">最大尝试</label>
+                  <select id="maxTries">
+                    <option selected>3</option><option>4</option><option>5</option>
+                  </select>
+                  <label class="pill">评分阈值</label>
+                  <select id="scoreThresh">
+                    <option>0</option><option selected>3</option><option>4</option><option>5</option>
+                  </select>
+                  <button class="btn" id="simulateSchedule">生成建议日程</button>
+                  <button class="success" id="applyScheduleAll">接受全部</button>
+                  <button class="btn" id="applyScheduleThresh">只接受 ≥ 阈值</button>
+                </div>
+                <pre id="schedulePreview" class="kbd" style="white-space:pre-wrap; max-height:220px; overflow:auto;"></pre>
+                <div class="hint">预览展示规则命中原因与加权：星标、标签、工作日/周末偏好等。</div>
+              </div>
+              <div>
+                <div class="section-title">清洗与批量编辑（C）</div>
+                <div class="toolbar">
+                  <button class="btn" id="dedupTitle">一键去重（同标题）</button>
+                  <button class="btn" id="extractKeywords">提取关键词→词库</button>
+                </div>
+                <div class="toolbar">
+                  <label class="pill">批量标签</label>
+                  <input id="batchTags" placeholder="以逗号分隔">
+                  <label class="pill">批量星标</label>
+                  <select id="batchStar">
+                    <option value="0" selected>无星</option>
+                    <option value="1">★</option>
+                    <option value="2">★★</option>
+                    <option value="3">★★★</option>
+                  </select>
+                  <button class="btn" id="applyBatch">应用到选中草案</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 预览差异 Modal -->
+    <div class="modal" id="diffModal">
+      <div class="dialog">
+        <h3>即将写入的变更预览</h3>
+        <table class="table table-compact" id="diffTable">
+          <thead><tr><th>选中</th><th>日期</th><th>前（标题｜细节）</th><th>后（标题｜细节）</th><th>原因/备注</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="row" style="justify-content: flex-end; margin-top:8px;">
+          <button class="btn" id="diffCancel">取消</button>
+          <button class="success" id="diffConfirm">确认写入</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* 你的原脚本已内联在下方，保持原样，只补充了事件绑定缺失的监听，以防按钮无挂载 */
+    </script>
+    <!-- 原脚本开始：完全保留你提供的逻辑（略注释：已贴全） -->
+    <script>
+      const PACEKEY = 'fourgrid-pace-v7';
+      const TPLKEY  = 'fourgrid-templates-v6';
+      const THEMEKEY= 'fourgrid-monththeme-v2';
+      const ROTATEKEY='fourgrid-rotate-v1';
+      const LEXKEY  = 'fourgrid-lexicon';
+      const PLAN_DRAFT_KEY = 'fourgrid-plan-drafts-v2';
+      const SNAPSHOT_KEY = 'fourgrid-snapshot-v2';
+      const dayNames = ['周日','周一','周二','周三','周四','周五','周六'];
+      const weeklyTemplate = [
+        { dow: 1, task: '周一｜结构练习', detailStd: '热身10m；体块/物体四角度；记录与词库', detailFast: '热身10m；体块+材质；四角度+构图；记录与词库' },
+        { dow: 2, task: '周二｜拆解与点子', detailStd: '订阅面板拆解3则；反转点子3个；词库维护', detailFast: '拆解5则；反转点子5个；词库清单' },
+        { dow: 3, task: '周三｜反转四格成稿', detailStd: '分镜→线稿→上黑白→首图导出与发布', detailFast: '两版模板A/C；择优成稿→发布' },
+        { dow: 4, task: '周四｜优化与下期草图', detailStd: '对白精简≤10字；画面清洁；次日选题草图', detailFast: '对白≤8字；风格变奏；次日两题打样' },
+        { dow: 5, task: '周五｜治愈四格成稿', detailStd: '无字动作/情绪表达；首图与发布', detailFast: '治愈四格+番外草图（可选）；发布' },
+        { dow: 6, task: '周六｜数据复盘与词库', detailStd: '数据复盘；词库批量导入；订阅要点记录', detailFast: '数据复盘；词库清洗去重；补做信息型' },
+        { dow: 0, task: '周日｜纸面练习与下周选题', detailStd: '打印模板A或C；随机挑3→定1', detailFast: '打印模板；随机挑5→定2；长篇分镜预案' },
+      ];
+      const paceState = JSON.parse(localStorage.getItem(PACEKEY) || '{}');
+      const tplState  = JSON.parse(localStorage.getItem(TPLKEY)  || '{}');
+      const themeState= JSON.parse(localStorage.getItem(THEMEKEY)|| '{}');
+      const rotateState = JSON.parse(localStorage.getItem(ROTATEKEY) || '{}');
+      function readSnapshots(){ try{ return JSON.parse(localStorage.getItem(SNAPSHOT_KEY) || '[]'); }catch(e){ return []; } }
+      function pushSnapshot(data){ const stack=readSnapshots(); stack.unshift(data); while(stack.length>3) stack.pop(); localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(stack)); }
+      function popSnapshot(level=1){ const stack=readSnapshots(); if(!stack.length) return null; const idx=Math.min(level-1, stack.length-1); const data=stack[idx]; const remain=stack.slice(idx+1); localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(remain)); return data; }
+      const defaultRotate={1:'开篇设定月',2:'信息型月',3:'冲突强化月',4:'治愈表达月',5:'镜头语言月',6:'对白精炼月',7:'风格变奏月',8:'场景空间月',9:'角色塑造月',10:'叙事结构月',11:'效率冲刺月',12:'年度复盘月',enabled:true};
+      function initDefaults(){
+        if(!paceState.mode) paceState.mode = 'standard';
+        if(!paceState.wkTime) paceState.wkTime = '20:30-22:00';
+        if(!paceState.weTime) paceState.weTime = '14:00-16:30';
+        if(!paceState.weekStart){ const d=new Date(); const day=d.getDay()||7; const monday=new Date(d.getFullYear(),d.getMonth(),d.getDate()-day+1); paceState.weekStart=monday.toISOString().slice(0,10); }
+        if(!tplState.title) tplState.title='{monthTheme}{weekday}｜{task}（{mode}）';
+        if(!tplState.desc) tplState.desc='时间：{date} {time}（{tz})\n任务：{task}\n细节：{detail}\n关键词：{keywords}\n周二星标词：{tuesdayStars}\n周三（反转）候选：{wedKeywords}\n周五（治愈）候选：{friKeywords}\n主题月：{monthTheme}';
+        if(!tplState.kwStrategy) tplState.kwStrategy='random';
+        if(!tplState.kwCount) tplState.kwCount=3;
+        if(typeof tplState.tueStarsToggle==='undefined') tplState.tueStarsToggle=true;
+        if(!tplState.tueStarsCount) tplState.tueStarsCount=3;
+        if(!tplState.tueMergeMode) tplState.tueMergeMode='append';
+        if(typeof tplState.wedToggle==='undefined') tplState.wedToggle=true;
+        if(!tplState.wedStrategy) tplState.wedStrategy='tag:冲突';
+        if(!tplState.wedCount) tplState.wedCount=3;
+        if(!tplState.wedMergeMode) tplState.wedMergeMode='append';
+        if(typeof tplState.friToggle==='undefined') tplState.friToggle=true;
+        if(!tplState.friStrategy) tplState.friStrategy='tag:治愈';
+        if(!tplState.friCount) tplState.friCount=3;
+        if(!tplState.friMergeMode) tplState.friMergeMode='append';
+        if(!themeState.name) themeState.name='';
+        if(!themeState.mode) themeState.mode='title';
+        if(!themeState.style) themeState.style='bracket';
+        if(Object.keys(rotateState).length===0){ Object.assign(rotateState, defaultRotate); } else { if(typeof rotateState.enabled==='undefined') rotateState.enabled=true; for(let m=1;m<=12;m++){ if(!rotateState[m]) rotateState[m]=defaultRotate[m]; } }
+        saveAll();
+      }
+      function saveAll(){ localStorage.setItem(PACEKEY, JSON.stringify(paceState)); localStorage.setItem(TPLKEY, JSON.stringify(tplState)); localStorage.setItem(THEMEKEY, JSON.stringify(themeState)); localStorage.setItem(ROTATEKEY, JSON.stringify(rotateState)); }
+      function el(s){ return document.querySelector(s); }
+      function pad(n){ return String(n).padStart(2,'0'); }
+      function parseSpan(span){ const m=/^(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})$/.exec(span||''); if(!m) return null; return {sh:+m[1],sm:+m[2],eh:+m[3],em:+m[4]}; }
+      function toICSDate(d){ return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+'T'+pad(d.getUTCHours())+pad(d.getUTCMinutes())+pad(d.getUTCSeconds())+'Z'; }
+      function escapeICS(s){ return String(s).replace(/([,;])/g,'\\$1').replace(/\n/g,'\\n'); }
+      function uniq(arr){ const s=new Set(); const out=[]; for(const x of arr){ if(!s.has(x)){ s.add(x); out.push(x); } } return out; }
+      function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i++){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+      function readLexicon(){ try{ const raw=localStorage.getItem(LEXKEY); if(!raw) return []; const data=JSON.parse(raw); if(Array.isArray(data)) return data; if(data && Array.isArray(data.items)) return data.items; return []; }catch(e){ return []; } }
+      function writeLexicon(list){ localStorage.setItem(LEXKEY, JSON.stringify(list)); }
+      function normalizeLex(list){ return list.map(x=>({ word:x.word||x.keyword||'', star:Number(x.star||x.rating||0), tags:(x.tags&&Array.isArray(x.tags))?x.tags:(typeof x.tag==='string'?[x.tag]:[]) })).filter(x=>x.word); }
+      function pickByStrategy(norm,strategy,count){
+        let pool=norm;
+        if(strategy && strategy.startsWith('tag:')){ const tag=strategy.slice(4); pool=norm.filter(x=>x.tags&&x.tags.includes(tag)); return shuffle(pool).slice(0,count).map(x=>x.word); }
+        if(strategy==='star-only'){ pool=norm.filter(x=>x.star>=2); return shuffle(pool).slice(0,count).map(x=>x.word); }
+        if(strategy==='star-priority'){ const stars=norm.filter(x=>x.star>=2); const others=norm.filter(x=>x.star<2); let res=shuffle(stars).slice(0,count); if(res.length<count){ res=res.concat(shuffle(others).slice(0,count-res.length)); } return res.slice(0,count).map(x=>x.word); }
+        return shuffle(pool).slice(0,count).map(x=>x.word);
+      }
+      function renderWeek(force=false){
+        const list=document.getElementById('dayList');
+        list.innerHTML='<div class="head"><div>星期</div><div>任务</div></div>';
+        const start=new Date(paceState.weekStart+'T00:00:00');
+        for(let i=0;i<7;i++){
+          const dt=new Date(start); dt.setDate(start.getDate()+i);
+          const dow=dt.getDay();
+          const rule=weeklyTemplate.find(r=>r.dow===dow);
+          if(!rule) continue;
+          const isWeekend=(dow===0||dow===6);
+          const time=isWeekend?(paceState.weTime||'14:00-16:30'):(paceState.wkTime||'20:30-22:00');
+          const detail=paceState.mode==='fast'?rule.detailFast:rule.detailStd;
+          const div=document.createElement('div');
+          div.className='item';
+          div.dataset.date=dt.toISOString().slice(0,10);
+          div.dataset.originTitle=rule.task;
+          div.dataset.originDetail=detail;
+          div.dataset.merged='0';
+          div.dataset.occupied='0';
+          div.innerHTML=`
+            <div>${dayNames[dow]}<br><span class="muted">${dt.toISOString().slice(0,10)} ${time}</span></div>
+            <div><b class="slot-title">${rule.task}</b>｜<span class="slot-detail">${detail}</span></div>
+          `;
+          list.appendChild(div);
+        }
+        if(force){ alert('已生成当周每日清单'); }
+      }
+      function pushToBoard(){ try{ const DASH='fourgrid-dash-v1'; const dash=JSON.parse(localStorage.getItem(DASH)||'{"practice":false,"story1":false,"story2":false,"review":false,"time":{}}'); dash.practice=false; dash.story1=false; dash.story2=false; dash.review=false; dash.time={practice:'',story1:'',story2:'',review:''}; localStorage.setItem(DASH, JSON.stringify(dash)); alert('已写入本周看板（重置为新一周）。'); }catch(e){ alert('写入失败，可手动操作。'); } }
+      function formatThemePrefix(name, style){ if(!name) return ''; if(style==='hash') return '#'+name+' '; if(style==='plain') return '主题：'+name+' '; return '【'+name+'】'; }
+      function effectiveThemeNameForDate(dt){ let name=''; if(rotateState.enabled){ const m=dt.getMonth()+1; name=rotateState[m]||''; } if(themeState.name){ name=themeState.name; } return name; }
+      function getMonthThemeForDate(dt){ if((themeState.mode==='off')) return ''; const name=effectiveThemeNameForDate(dt); if(!name) return ''; return formatThemePrefix(name, themeState.style||'bracket'); }
+      function formatWithTpl(tpl, ctx){
+        return tpl.replace(/{weekday}/g,ctx.weekday).replace(/{date}/g,ctx.date).replace(/{time}/g,ctx.time).replace(/{mode}/g,ctx.mode).replace(/{task}/g,ctx.task).replace(/{detail}/g,ctx.detail).replace(/{tz}/g,ctx.tz).replace(/{keywords}/g,ctx.keywords).replace(/{tuesdayStars}/g,ctx.tuesdayStars||'').replace(/{wedKeywords}/g,ctx.wedKeywords||'').replace(/{friKeywords}/g,ctx.friKeywords||'').replace(/{monthTheme}/g,ctx.monthTheme||'');
+      }
+      function passFilters(dow, isWeekend, mode, taskTitle){
+        const checkedDows=Array.from(document.querySelectorAll('#weekdayFilters input[type=checkbox]:checked')).map(x=>Number(x.getAttribute('data-dow')));
+        if(!checkedDows.includes(dow)) return false;
+        const wdWe=document.getElementById('wdWeFilter').value;
+        if(wdWe==='wd' && isWeekend) return false;
+        if(wdWe==='we' && !isWeekend) return false;
+        const mf=document.getElementById('modeFilter').value;
+        if(mf!=='all' && mf!==mode) return false;
+        const allowedKeys=Array.from(document.querySelectorAll('#taskFilters input[type=checkbox]:checked')).map(x=>x.getAttribute('data-key'));
+        if(allowedKeys.length){ const hit=allowedKeys.some(k=> taskTitle.includes(k)); if(!hit) return false; }
+        return true;
+      }
+      function buildCtx(dt,dow,span,rule,normLex){
+        const tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Shanghai';
+        const globalKeywords=pickByStrategy(normLex,(tplState.kwStrategy||'random'),(tplState.kwCount||3));
+        let tuesdayStarsList=[]; if(tplState.tueStarsToggle && dow===2){ tuesdayStarsList=pickByStrategy(normLex,'star-only',(tplState.tueStarsCount||3)); }
+        let wedList=[]; if(tplState.wedToggle && dow===3){ wedList=pickByStrategy(normLex,(tplState.wedStrategy||'tag:冲突'),(tplState.wedCount||3)); }
+        let friList=[]; if(tplState.friToggle && dow===5){ friList=pickByStrategy(normLex,(tplState.friStrategy||'tag:治愈'),(tplState.friCount||3)); }
+        let finalKeywords=globalKeywords.slice();
+        if(dow===2 && tplState.tueStarsToggle){ finalKeywords=(tplState.tueMergeMode==='replace')?tuesdayStarsList.slice():uniq(finalKeywords.concat(tuesdayStarsList)); }
+        if(dow===3 && tplState.wedToggle){ finalKeywords=(tplState.wedMergeMode==='replace')?wedList.slice():uniq(finalKeywords.concat(wedList)); }
+        if(dow===5 && tplState.friToggle){ finalKeywords=(tplState.friMergeMode==='replace')?friList.slice():uniq(finalKeywords.concat(friList)); }
+        const themePrefix=getMonthThemeForDate(dt);
+        const themeForTitle=(themeState.mode==='title'||themeState.mode==='both')?themePrefix:'';
+        const themeForDesc =(themeState.mode==='desc' ||themeState.mode==='both')?themePrefix:'';
+        return { weekday:dayNames[dow], date:dt.toISOString().slice(0,10), time:pad(span.sh)+':'+pad(span.sm)+'-'+pad(span.eh)+':'+pad(span.em), mode:paceState.mode==='fast'?'加速档':'标准档', task:rule.task, detail:paceState.mode==='fast'?rule.detailFast:rule.detailStd, tz, keywords:finalKeywords.length?'· '+finalKeywords.join(' · '):'', tuesdayStars:tuesdayStarsList.length?'· '+tuesdayStarsList.join(' · '):'', wedKeywords:wedList.length?'· '+wedList.join(' · '):'', friKeywords:friList.length?'· '+friList.join(' · '):'', monthTheme:themePrefix, __themeTitle:themeForTitle, __themeDesc:themeForDesc };
+      }
+      function buildICSForWeeks(weeks=1){
+        const alarmMin=Number(document.getElementById('alarmMin').value||60);
+        const titleTpl=document.getElementById('tplTitle').value;
+        const descTpl =document.getElementById('tplDesc').value;
+        const normLex=normalizeLex(readLexicon());
+        const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//fourgrid-tools//gpt-5//CN','CALSCALE:GREGORIAN'];
+        const base=new Date(paceState.weekStart+'T00:00:00');
+        for(let w=0; w<weeks; w++){
+          const start=new Date(base); start.setDate(base.getDate()+w*7);
+          for(let i=0;i<7;i++){
+            const dt=new Date(start); dt.setDate(start.getDate()+i);
+            const dow=dt.getDay();
+            const rule=weeklyTemplate.find(r=>r.dow===dow);
+            if(!rule) continue;
+            const isWeekend=(dow===0||dow===6);
+            const spanStr=isWeekend?(paceState.weTime||'14:00-16:30'):(paceState.wkTime||'20:30-22:00');
+            const span=parseSpan(spanStr)||{sh:20,sm:30,eh:22,em:0};
+            const begin=new Date(dt.getFullYear(),dt.getMonth(),dt.getDate(),span.sh,span.sm);
+            const end  =new Date(dt.getFullYear(),dt.getMonth(),dt.getDate(),span.eh,span.em);
+            const modeTag=paceState.mode;
+            if(!passFilters(dow,isWeekend,modeTag,rule.task)) continue;
+            const ctx=buildCtx(dt,dow,span,rule,normLex);
+            let titleStr=formatWithTpl(titleTpl,ctx);
+            let descStr =formatWithTpl(descTpl, ctx);
+            if(ctx.__themeTitle && !titleStr.includes(ctx.__themeTitle)){ titleStr=ctx.__themeTitle+titleStr; }
+            if(ctx.__themeDesc && !descStr.includes(ctx.__themeDesc)){ descStr=ctx.__themeDesc+descStr; }
+            lines.push('BEGIN:VEVENT');
+            lines.push('UID:fourgrid-'+begin.getTime()+'-'+w+'@local');
+            lines.push('DTSTAMP:'+toICSDate(new Date()));
+            lines.push('SUMMARY:'+escapeICS(titleStr));
+            lines.push('DESCRIPTION:'+escapeICS(descStr));
+            lines.push('DTSTART:'+toICSDate(begin));
+            lines.push('DTEND:'+toICSDate(end));
+            lines.push('BEGIN:VALARM');
+            lines.push('TRIGGER:-PT'+Math.max(0,alarmMin)+'M');
+            lines.push('ACTION:DISPLAY');
+            lines.push('DESCRIPTION:'+escapeICS(titleStr));
+            lines.push('END:VALARM');
+            lines.push('END:VEVENT');
+          }
+        }
+        lines.push('END:VCALENDAR');
+        return lines.join('\r\n');
+      }
+      function buildCSVForWeeks(weeks=1){
+        const normLex=normalizeLex(readLexicon());
+        const base=new Date(paceState.weekStart+'T00:00:00');
+        const rows=[];
+        rows.push(['Summary','Date','Start','End','Weekday','Mode','Task','Detail','Keywords','TuesdayStars','WedKeywords','FriKeywords','MonthTheme','Timezone','UID','Description']);
+        for(let w=0; w<weeks; w++){
+          const start=new Date(base); start.setDate(base.getDate()+w*7);
+          for(let i=0;i<7;i++){
+            const dt=new Date(start); dt.setDate(start.getDate()+i);
+            const dow=dt.getDay();
+            const rule=weeklyTemplate.find(r=>r.dow===dow);
+            if(!rule) continue;
+            const isWeekend=(dow===0||dow===6);
+            const spanStr=isWeekend?(paceState.weTime||'14:00-16:30'):(paceState.wkTime||'20:30-22:00');
+            const span=parseSpan(spanStr)||{sh:20,sm:30,eh:22,em:0};
+            const begin=new Date(dt.getFullYear(),dt.getMonth(),dt.getDate(),span.sh,span.sm);
+            const end  =new Date(dt.getFullYear(),dt.getMonth(),dt.getDate(),span.eh,span.em);
+            const modeTag=paceState.mode;
+            if(!passFilters(dow,isWeekend,modeTag,rule.task)) continue;
+            const ctx=buildCtx(dt,dow,span,rule,normLex);
+            const titleTpl=document.getElementById('tplTitle').value;
+            const descTpl =document.getElementById('tplDesc').value;
+            let titleStr=formatWithTpl(titleTpl,ctx);
+            let descStr =formatWithTpl(descTpl, ctx);
+            if(ctx.__themeTitle && !titleStr.includes(ctx.__themeTitle)){ titleStr=ctx.__themeTitle+titleStr; }
+            if(ctx.__themeDesc && !descStr.includes(ctx.__themeDesc)){ descStr=ctx.__themeDesc+descStr; }
+            const tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Shanghai';
+            const uid='fourgrid-'+begin.getTime()+'-'+w+'@local';
+            rows.push([titleStr, dt.toISOString().slice(0,10), pad(begin.getHours())+':'+pad(begin.getMinutes()), pad(end.getHours())+':'+pad(end.getMinutes()), dayNames[dow], (paceState.mode==='fast'?'加速档':'标准档'), rule.task, (paceState.mode==='fast'?rule.detailFast:rule.detailStd), (ctx.keywords||'').replace(/\n/g,' '), (ctx.tuesdayStars||'').replace(/\n/g,' '), (ctx.wedKeywords||'').replace(/\n/g,' '), (ctx.friKeywords||'').replace(/\n/g,' '), (ctx.monthTheme||''), tz, uid, descStr]);
+          }
+        }
+        const csv=rows.map(r=> r.map(cell=>{ const s=String(cell||''); if(/[",\n]/.test(s)){ return '"'+s.replace(/"/g,'""')+'"'; } return s; }).join(',')).join('\n');
+        return csv;
+      }
+      function buildPreview(){
+        const ics=buildICSForWeeks(Number(document.getElementById('weeksCount').value||1));
+        const pre=document.getElementById('icsPreview');
+        pre.style.maxHeight=(document.getElementById('previewHeight').value||'280')+'px';
+        document.getElementById('previewHeightVal').textContent=pre.style.maxHeight;
+        const preview=ics.split('\r\n').slice(0,24).join('\n')+'\n...\n(预览截断)';
+        pre.textContent=preview;
+      }
+      function exportICS(){
+        const weeks=Number(document.getElementById('weeksCount').value||1);
+        const ics=buildICSForWeeks(weeks);
+        const a=document.createElement('a');
+        const prefix=(document.getElementById('filePrefix').value||'四格养成').trim()||'四格养成';
+        a.download=prefix+'-日程-'+weeks+'周.ics';
+        a.href='data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
+        a.click();
+      }
+      function exportCSV(){
+        const weeks=Number(document.getElementById('weeksCount').value||1);
+        const csv=buildCSVForWeeks(weeks);
+        const a=document.createElement('a');
+        const prefix=(document.getElementById('filePrefix').value||'四格养成').trim()||'四格养成';
+        a.download=prefix+'-任务-'+weeks+'周.csv';
+        a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+        a.click();
+      }
+      function parseCSV(text){
+        const rows=[]; let i=0, field='', row=[], inQuotes=false;
+        while(i<text.length){
+          const ch=text[i];
+          if(inQuotes){
+            if(ch==='"' && text[i+1]==='"'){ field+='"'; i+=2; continue; }
+            if(ch==='"'){ inQuotes=false; i++; continue; }
+            field+=ch; i++; continue;
+          }else{
+            if(ch==='\"'){ inQuotes=true; i++; continue; }
+            if(ch===','){ row.push(field); field=''; i++; continue; }
+            if(ch==='\n' || ch==='\r'){ if(ch==='\r' && text[i+1]==='\n') i++; row.push(field); field=''; rows.push(row); row=[]; i++; continue; }
+            field+=ch; i++; continue;
+          }
+        }
+        if(field.length>0 || row.length>0){ row.push(field); rows.push(row); }
+        return rows.filter(r=>r.length>1 || (r.length===1 && r[0].trim()!==''));
+      }
+      let csvRows=null;
+      function previewCSVHandler(){
+        const file=document.getElementById('csvFile').files && document.getElementById('csvFile').files[0];
+        if(!file){ alert('请选择 CSV 文件'); return; }
+        const reader=new FileReader();
+        reader.onload=(e)=>{
+          try{
+            const text=e.target.result;
+            const rows=parseCSV(text);
+            csvRows=rows;
+            const header=rows[0]||[];
+            const sample=rows.slice(0, Math.min(11, rows.length));
+            const preview=sample.map(r=> r.join(' | ')).join('\n');
+            document.getElementById('csvPreview').textContent='列：'+header.join(' | ')+'\n—— 预览 ——\n'+preview;
+            document.getElementById('applyToLex').disabled=false;
+            document.getElementById('applyToPlan').disabled=false;
+          }catch(err){
+            document.getElementById('csvPreview').textContent='解析失败：'+(err.message||String(err));
+            document.getElementById('applyToLex').disabled=true;
+            document.getElementById('applyToPlan').disabled=true;
+          }
+        };
+        reader.readAsText(file, 'utf-8');
+      }
+      function headersMap(header){ const idx={}; header.forEach((h,i)=>{ idx[h.trim().toLowerCase()]=i; }); return idx; }
+      function readDrafts(){ try{ return JSON.parse(localStorage.getItem(PLAN_DRAFT_KEY)||'[]'); }catch(e){ return []; } }
+      function writeDrafts(list){ localStorage.setItem(PLAN_DRAFT_KEY, JSON.stringify(list)); }
+      function applyToLexicon(){
+        if(!csvRows || csvRows.length<2){ alert('请先预览 CSV'); return; }
+        const header=csvRows[0]; const idx=headersMap(header);
+        const wordsCols=['keywords','tuesdaystars','wedkeywords','frikeywords','tags'];
+        const out={};
+        const pushWord=(w,star=0,tags=[])=>{
+          const key=w.trim(); if(!key) return;
+          if(!out[key]) out[key]={word:key, star:star, tags:new Set()};
+          out[key].star=Math.max(out[key].star, star||0);
+          tags.forEach(t=>{ if(t && t.trim()) out[key].tags.add(t.trim()); });
+        };
+        for(let r=1;r<csvRows.length;r++){
+          const row=csvRows[r];
+          for(const col of wordsCols){
+            if(typeof idx[col]!=='undefined'){
+              const val=row[idx[col]]||'';
+              const parts=String(val).split(/·|,|;|\||\s+/).map(s=>s.trim()).filter(Boolean);
+              for(const p of parts){ pushWord(p,0,[]); }
+            }
+          }
+        }
+        const existing=normalizeLex(readLexicon());
+        const mapOld={};
+        existing.forEach(x=>{
+          if(!mapOld[x.word]) mapOld[x.word]={word:x.word, star:x.star||0, tags:new Set(x.tags||[])};
+          else{ mapOld[x.word].star=Math.max(mapOld[x.word].star, x.star||0); (x.tags||[]).forEach(t=> mapOld[x.word].tags.add(t)); }
+        });
+        Object.keys(out).forEach(k=>{
+          if(!mapOld[k]) mapOld[k]=out[k];
+          else{ mapOld[k].star=Math.max(mapOld[k].star, out[k].star||0); out[k].tags.forEach(t=> mapOld[k].tags.add(t)); }
+        });
+        const merged=Object.values(mapOld).map(x=>({word:x.word, star:x.star||0, tags:Array.from(x.tags)}));
+        writeLexicon(merged);
+        alert('已将 CSV 中的关键词合并到词库（去重并合并标签）。');
+      }
+      function applyToPlanDrafts(){
+        if(!csvRows || csvRows.length<2){ alert('请先预览 CSV'); return; }
+        const header=csvRows[0]; const idx=headersMap(header);
+        const get=(row,name)=> row[idx[name]??-1]||'';
+        const drafts=[]; const seen=new Set();
+        for(let r=1;r<csvRows.length;r++){
+          const row=csvRows[r];
+          const summary=get(row,'summary'); const date=get(row,'date'); const start=get(row,'start'); const end=get(row,'end'); const description=get(row,'description'); const tags=get(row,'tags'); const star=Number(get(row,'star')||0); const supportPriority=Number(get(row,'supportpriority')||0);
+          if(!summary) continue;
+          const uid=`${(date||'NA')} ${(start||'NA')} ${summary}`;
+          if(seen.has(uid)) continue; seen.add(uid);
+          drafts.push({ summary, date, start, end, description, tags, selected:false, star:isNaN(star)?0:star, supportPriority:isNaN(supportPriority)?0:supportPriority });
+        }
+        writeDrafts(drafts);
+        renderDrafts();
+        alert('已生成计划草案 '+drafts.length+' 条，已保存到本地。');
+      }
+      function renderDrafts(){
+        const drafts=readDrafts();
+        const tbody=document.querySelector('#draftTable tbody');
+        tbody.innerHTML='';
+        drafts.forEach((d,i)=>{
+          const tr=document.createElement('tr');
+          tr.innerHTML=`
+            <td><input type="checkbox" data-idx="${i}" ${d.selected?'checked':''}></td>
+            <td>${d.summary || ''}</td>
+            <td>${d.date || ''}</td>
+            <td>${d.start || ''}</td>
+            <td>${d.end || ''}</td>
+            <td>
+              <div class="chips">
+                ${(d.tags||'').split(/,|;|\s+/).filter(Boolean).map(t=>`<span class="chip">${t}</span>`).join('')}
+                ${d.star? `<span class="chip">★×${d.star}</span>`:''}
+                ${d.supportPriority? `<span class="chip">P+${d.supportPriority}</span>`:''}
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+        tbody.querySelectorAll('input[type=checkbox]').forEach(cb=>{
+          cb.addEventListener('change',(e)=>{
+            const idx=Number(e.target.getAttribute('data-idx'));
+            const drafts=readDrafts(); drafts[idx].selected=e.target.checked; writeDrafts(drafts);
+          });
+        });
+      }
+      function getSelectedIndexes(){ const drafts=readDrafts(); return drafts.map((d,i)=> d.selected?i:-1).filter(i=>i>=0); }
+      function getSelectedDrafts(){ const drafts=readDrafts(); return drafts.map((d,i)=>({...d,__index:i})).filter(d=>d.selected); }
+      function isStrictEmptySlot(slot){
+        if(!slot) return false;
+        const titleEl=slot.querySelector('.slot-title'); const detailEl=slot.querySelector('.slot-detail');
+        const t0=slot.dataset.originTitle||''; const d0=slot.dataset.originDetail||'';
+        const sameTitle=(titleEl.textContent||'')===t0; const sameDetail=(detailEl.textContent||'')===d0;
+        const merged=slot.dataset.merged==='1'; const occupied=slot.dataset.occupied==='1';
+        return sameTitle && sameDetail && !merged && !occupied;
+      }
+      function currentMergeParts(titleEl){ const text=titleEl.textContent||''; const parts=text.split(/｜|\s·\s|\s\+\s/).map(s=>s.trim()).filter(Boolean); return parts.length; }
+      function getMergeSep(){ const v=document.getElementById('mergeSep').value; if(v==='custom'){ const c=document.getElementById('mergeSepCustom').value || ' · '; return c; } return v; }
+      function diffApply(selected,strategy){
+        const rows=[]; const list=document.getElementById('dayList'); const items=Array.from(list.querySelectorAll('.item')); const dateToItem={};
+        items.forEach(div=>{ const date=(div.querySelector('span.muted')?.textContent||'').trim().slice(0,10); if(date) dateToItem[date]=div; });
+        const mergeSep=getMergeSep(); const maxParts=Number(document.getElementById('maxMergeParts').value||2); const allowMulti=document.getElementById('multiAppend').checked;
+        selected.forEach(d=>{
+          const slot=d.date ? dateToItem[d.date] : null;
+          if(!slot){ rows.push({checked:true, date:d.date||'(未排期)', before:'—', after:'—', reason:'未找到当周对应日期'}); return; }
+          const titleEl=slot.querySelector('.slot-title'); const detailEl=slot.querySelector('.slot-detail');
+          const before=`${titleEl.textContent}｜${detailEl.textContent}`;
+          let afterTitle=titleEl.textContent; let afterDetail=detailEl.textContent; let reason='';
+          const strictEmpty=isStrictEmptySlot(slot);
+          if(strategy==='emptyOnly'){
+            if(!strictEmpty){ reason='非严格空位，跳过'; rows.push({checked:false, date:d.date, before, after:`[保持不变] ${before}`, reason}); return; }
+          }
+          if(strategy==='overwrite'){
+            if(!strictEmpty){ strategy='appendTitle'; reason='非占位，自动降级为合并'; }
+            else{
+              afterTitle=(document.getElementById('mapSummary').value==='append') ? (afterTitle+mergeSep+d.summary) : d.summary;
+              if(document.getElementById('mapDesc').value==='detail'){ afterDetail=d.description||afterDetail; }
+              else if(document.getElementById('mapDesc').value==='append'){ afterDetail=afterDetail+'；'+(d.description||''); }
+              rows.push({checked:true, date:d.date, before, after:`${afterTitle}｜${afterDetail}`, reason:reason||'覆盖占位'}); return;
+            }
+          }
+          if(strategy==='appendTitle'){
+            const partsNow=currentMergeParts(titleEl);
+            if(!allowMulti && partsNow>1){ rows.push({checked:false, date:d.date, before, after:`[保持不变] ${before}`, reason:'仅首次合并，已存在合并'}); return; }
+            let newTitle=afterTitle+mergeSep+d.summary;
+            const split=newTitle.split(new RegExp(mergeSep.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g')).map(s=>s.trim()).filter(Boolean);
+            if(split.length>maxParts){ newTitle=split.slice(0,maxParts).join(mergeSep)+` …（共${split.length}项）`; reason=`合并段数达到上限 ${maxParts}`; } else { reason='同槽位合并标题'; }
+            afterTitle=newTitle;
+            if(document.getElementById('mapDesc').value==='detail'){ afterDetail=d.description||afterDetail; }
+            else if(document.getElementById('mapDesc').value==='append'){ afterDetail=afterDetail+'；'+(d.description||''); }
+            rows.push({checked:true, date:d.date, before, after:`${afterTitle}｜${afterDetail}`, reason}); return;
+          }
+          rows.push({checked:false, date:d.date, before, after:'—', reason:'未知策略'});
+        });
+        return rows;
+      }
+      function openDiffModal(rows){
+        const modal=document.getElementById('diffModal');
+        const tbody=document.querySelector('#diffTable tbody');
+        tbody.innerHTML='';
+        rows.forEach((r,i)=>{
+          const tr=document.createElement('tr');
+          tr.innerHTML=`
+            <td><input type="checkbox" data-i="${i}" ${r.checked?'checked':''}></td>
+            <td>${r.date||''}</td>
+            <td>${escapeHTML(r.before||'')}</td>
+            <td>${escapeHTML(r.after||'')}</td>
+            <td>${escapeHTML(r.reason||'')}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        modal.style.display='flex';
+        document.getElementById('diffCancel').onclick=()=>{ modal.style.display='none'; };
+        document.getElementById('diffConfirm').onclick=()=>{
+          const checks=Array.from(tbody.querySelectorAll('input[type=checkbox]')).map((cb,idx)=> cb.checked);
+          modal.style.display='none';
+          doApplyWithDiff(rows, checks);
+        };
+      }
+      function escapeHTML(s){ return String(s).replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+      function doApplyWithDiff(rows, checks){
+        pushSnapshot({ dayListHTML:document.getElementById('dayList').innerHTML, drafts:readDrafts() });
+        const list=document.getElementById('dayList'); const items=Array.from(list.querySelectorAll('.item')); const dateToItem={};
+        items.forEach(div=>{ const date=(div.querySelector('span.muted')?.textContent||'').trim().slice(0,10); if(date) dateToItem[date]=div; });
+        let applied=0;
+        rows.forEach((r,i)=>{
+          if(!checks[i]) return;
+          const date=r.date; const slot=dateToItem[date]; if(!slot) return;
+          const titleEl=slot.querySelector('.slot-title'); const detailEl=slot.querySelector('.slot-detail');
+          const after=r.after||''; const idx=after.indexOf('｜');
+          if(idx>0){ titleEl.textContent=after.slice(0,idx); detailEl.textContent=after.slice(idx+1); }
+          else{ titleEl.textContent=after; }
+          slot.dataset.merged='1'; slot.dataset.occupied='1'; applied++;
+        });
+        if(document.getElementById('applyExportICS').checked){ exportICS(); }
+        if(document.getElementById('applyExportCSV').checked){ exportCSV(); }
+        renderDrafts(); buildPreview(); alert('已应用 '+applied+' 条变更到当周清单。');
+      }
+      function previewApplyDiff(){ const selected=getSelectedDrafts(); if(!selected.length){ alert('请勾选至少一条草案'); return; } const strategy=document.getElementById('applyStrategy').value; const rows=diffApply(selected, strategy); openDiffModal(rows); }
+      function applySelectedDrafts(){ previewApplyDiff(); }
+      function parseTimeToMinutes(t){ if(!t) return null; const m=/^(\d{1,2}):(\d{2})$/.exec(t); if(!m) return null; return Number(m[1])*60+Number(m[2]); }
+      function minutesToTime(m){ const h=Math.floor(m/60), mi=m%60; return pad(h)+':'+pad(mi); }
+      function isWeekendDateStr(dateStr){ const dt=new Date(dateStr+'T00:00:00'); const d=dt.getDay(); return d===0 || d===6; }
+      function scoreDraftToDay(draft, dateStr){
+        const text=(draft.summary+' '+(draft.description||'')+' '+(draft.tags||'')).toLowerCase();
+        const dow=new Date(dateStr+'T00:00:00').getDay();
+        let score=0; const reasons=[];
+        if(/反转/.test(text) && dow===3){ score+=3; reasons.push('匹配“反转”→周三 +3'); }
+        if(/治愈/.test(text) && dow===5){ score+=3; reasons.push('匹配“治愈”→周五 +3'); }
+        if((/复盘|选题/.test(text)) && (dow===6||dow===0)){ score+=2; reasons.push('复盘/选题→周末 +2'); }
+        if(!isWeekendDateStr(dateStr)){ score+=1; reasons.push('工作日 +1'); }
+        const star=Number(draft.star||0); if(star>0){ score+=star; reasons.push('星标 +' + star); }
+        const tagWeights=['反转','治愈','复盘','选题','信息型']; tagWeights.forEach(t=>{ if(text.includes(t.toLowerCase())){ score+=2; reasons.push(`标签命中“${t}” +2`); } });
+        const sp=Number(draft.supportPriority||0); if(sp){ score+=sp; reasons.push('手动权重 +' + sp); }
+        return { score, reasons };
+      }
+      function generateSuggestedSchedule(){
+        const drafts=readDrafts().filter(d=>!d.date);
+        if(!drafts.length){ return {suggestions:[], msg:'无可排期的无日期草案'}; }
+        const start=new Date(paceState.weekStart+'T00:00:00'); const days=[]; for(let i=0;i<7;i++){ const dt=new Date(start); dt.setDate(start.getDate()+i); const dateStr=dt.toISOString().slice(0,10); days.push(dateStr); }
+        const dailyLimit=Number(document.getElementById('smartDailyLimit').value||1); const assignedCount={}; days.forEach(d=> assignedCount[d]=0);
+        const suggestions=drafts.map(d=>{
+          const scored=days.map(ds=>{ const {score,reasons}=scoreDraftToDay(d, ds); return { day:ds, score, reasons }; }).sort((a,b)=> b.score - a.score);
+          let chosen=null;
+          for(const cand of scored){ if(assignedCount[cand.day] < dailyLimit){ chosen=cand; break; } }
+          if(!chosen) chosen=scored[0];
+          assignedCount[chosen.day]++; return { draft:d, date: chosen.day, score: chosen.score, reasons: chosen.reasons };
+        });
+        return { suggestions, msg:'已生成建议日程 '+suggestions.length+' 条' };
+      }
+      function previewSuggestions(){
+        const res=generateSuggestedSchedule();
+        const lines=[]; lines.push(res.msg);
+        res.suggestions.forEach((s,i)=>{ lines.push(`#${i+1} -> ${s.date} ｜ ${s.draft.summary} ｜ 评分 ${s.score}`); if(s.reasons && s.reasons.length){ lines.push('  · '+s.reasons.join('；')); } });
+        document.getElementById('schedulePreview').textContent=lines.join('\n');
+        return res;
+      }
+      function applySuggestionsCore(filterFn){
+        const res=generateSuggestedSchedule();
+        if(!res.suggestions.length){ alert('没有建议可应用'); return; }
+        const drafts=readDrafts();
+        const step=Number(document.getElementById('offsetStep').value||30);
+        const maxTries=Number(document.getElementById('maxTries').value||3);
+        const dayBaseSpan={};
+        const wkSpan=parseSpan(paceState.wkTime||'20:30-22:00') || {sh:20,sm:30,eh:22,em:0};
+        const weSpan=parseSpan(paceState.weTime||'14:00-16:30') || {sh:14,sm:0,eh:16,em:30};
+        const used={};
+        const addUsed=(date,st,et)=>{ if(!used[date]) used[date]=[]; used[date].push([st,et]); };
+        const hasConflict=(date,st,et)=>{ if(!used[date]) return false; return used[date].some(([s,e])=> !(et<=s || st>=e)); };
+        let applied=0;
+        res.suggestions.forEach(s=>{
+          if(filterFn && !filterFn(s)) return;
+          const d=s.draft; const date=s.date;
+          let start=d.start || null; let end=d.end || null;
+          if(!start || !end){ const isWe=isWeekendDateStr(date); const base=isWe?weSpan:wkSpan; start=pad(base.sh)+':'+pad(base.sm); end=pad(base.eh)+':'+pad(base.em); }
+          let st=(start.split(':')[0]*60+Number(start.split(':')[1])); let et=(end.split(':')[0]*60+Number(end.split(':')[1]));
+          let tries=0; while(hasConflict(date,st,et) && tries<maxTries){ st+=step; et+=step; tries++; }
+          addUsed(date, st, et);
+          const idx=drafts.findIndex(x=> x===d);
+          if(idx>=0){ drafts[idx].date=date; drafts[idx].start=(String(Math.floor(st/60)).padStart(2,'0')+':'+String(st%60).padStart(2,'0')); drafts[idx].end=(String(Math.floor(et/60)).padStart(2,'0')+':'+String(et%60).padStart(2,'0')); applied++; }
+        });
+        writeDrafts(drafts); renderDrafts(); alert('已写回建议日期/时间 '+applied+' 条。你可以勾选这些草案并“将选中草案写入当周”。');
+      }
+      function dedupByTitle(){ const drafts=readDrafts(); const map={}; const out=[]; drafts.forEach(d=>{ const key=(d.summary||'').trim(); if(!key) return; if(!map[key]){ map[key]=true; out.push(d); } }); writeDrafts(out); renderDrafts(); alert('已按标题去重，剩余 '+out.length+' 条。'); }
+      function extractAndMergeKeywordsFromDrafts(){
+        const drafts=readDrafts(); const collected={}; const push=(w)=>{ const k=w.trim(); if(!k) return; if(!collected[k]) collected[k]={word:k, star:0, tags:new Set(['draft'])}; };
+        drafts.forEach(d=>{ const fields=[d.summary||'', d.description||'', d.tags||'']; fields.forEach(f=>{ String(f).split(/·|,|;|\||\s+/).map(s=>s.trim()).filter(Boolean).forEach(push); }); });
+        const existing=normalizeLex(readLexicon()); const mapOld={};
+        existing.forEach(x=>{ if(!mapOld[x.word]) mapOld[x.word]={word:x.word, star:x.star||0, tags:new Set(x.tags||[])}; else{ mapOld[x.word].star=Math.max(mapOld[x.word].star, x.star||0); (x.tags||[]).forEach(t=> mapOld[x.word].tags.add(t)); } });
+        Object.keys(collected).forEach(k=>{ if(!mapOld[k]) mapOld[k]=collected[k]; else{ mapOld[k].star=Math.max(mapOld[k].star, collected[k].star||0); collected[k].tags.forEach(t=> mapOld[k].tags.add(t)); } });
+        const merged=Object.values(mapOld).map(x=>({word:x.word, star:x.star||0, tags:Array.from(x.tags)}));
+        writeLexicon(merged); alert('已从草案中提取关键词并合并到词库（去重）。');
+      }
+      function applyBatchEdit(){
+        const drafts=readDrafts(); const indexes=getSelectedIndexes(); if(!indexes.length){ alert('请勾选草案'); return; }
+        const addTags=(document.getElementById('batchTags').value||'').split(/,|;|\s+/).map(s=>s.trim()).filter(Boolean);
+        const star=Number(document.getElementById('batchStar').value||0);
+        indexes.forEach(idx=>{ const d=drafts[idx]; const tagsOld=(d.tags||'').split(/,|;|\s+/).filter(Boolean); const merged=uniq(tagsOld.concat(addTags)); d.tags=merged.join(','); d.star=star; });
+        writeDrafts(drafts); renderDrafts(); alert('已应用批量编辑到 '+indexes.length+' 条草案。');
+      }
+      function bindInputs(){
+        el('#paceMode').value=paceState.mode; el('#wkTime').value=paceState.wkTime||''; el('#weTime').value=paceState.weTime||''; el('#weekStart').value=paceState.weekStart||'';
+        el('#tplTitle').value=tplState.title||''; el('#tplDesc').value=tplState.desc||'';
+        el('#kwStrategy').value=tplState.kwStrategy||'random'; el('#kwCount').value=String(tplState.kwCount||3);
+        el('#tueStarsToggle').checked=!!tplState.tueStarsToggle; el('#tueStarsCount').value=String(tplState.tueStarsCount||3); el('#tueMergeMode').value=tplState.tueMergeMode||'append';
+        el('#wedToggle').checked=!!tplState.wedToggle; el('#wedStrategy').value=tplState.wedStrategy||'tag:冲突'; el('#wedCount').value=String(tplState.wedCount||3); el('#wedMergeMode').value=tplState.wedMergeMode||'append';
+        el('#friToggle').checked=!!tplState.friToggle; el('#friStrategy').value=tplState.friStrategy||'tag:治愈'; el('#friCount').value=String(tplState.friCount||3); el('#friMergeMode').value=tplState.friMergeMode||'append';
+        el('#monthThemeName').value=themeState.name||''; el('#monthThemeMode').value=themeState.mode||'title'; el('#monthThemeStyle').value=themeState.style||'bracket';
+        el('#filePrefix').value=(document.getElementById('filePrefix').value||'四格养成');
+        el('#previewHeight').addEventListener('input', buildPreview);
+        renderRotateGrid(); el('#rotateToggle').checked=!!rotateState.enabled;
+        el('#paceMode').addEventListener('change', e=>{ paceState.mode=e.target.value; saveAll(); renderWeek(); buildPreview(); });
+        el('#wkTime').addEventListener('input', e=>{ paceState.wkTime=e.target.value; saveAll(); buildPreview(); });
+        el('#weTime').addEventListener('input', e=>{ paceState.weTime=e.target.value; saveAll(); buildPreview(); });
+        el('#weekStart').addEventListener('change', e=>{ paceState.weekStart=e.target.value; saveAll(); renderWeek(); buildPreview(); });
+        el('#genWeek').addEventListener('click', ()=>{ renderWeek(true); buildPreview(); });
+        el('#pushToBoard').addEventListener('click', pushToBoard);
+        el('#tplTitle').addEventListener('input', ()=>{ tplState.title=el('#tplTitle').value; saveAll(); buildPreview(); });
+        el('#tplDesc').addEventListener('input', ()=>{ tplState.desc=el('#tplDesc').value; saveAll(); buildPreview(); });
+        el('#kwStrategy').addEventListener('change', e=>{ tplState.kwStrategy=e.target.value; saveAll(); buildPreview(); });
+        el('#kwCount').addEventListener('change', e=>{ tplState.kwCount=Number(e.target.value); saveAll(); buildPreview(); });
+        el('#tueStarsToggle').addEventListener('change', e=>{ tplState.tueStarsToggle=e.target.checked; saveAll(); buildPreview(); });
+        el('#tueStarsCount').addEventListener('change', e=>{ tplState.tueStarsCount=Number(e.target.value); saveAll(); buildPreview(); });
+        el('#tueMergeMode').addEventListener('change', e=>{ tplState.tueMergeMode=e.target.value; saveAll(); buildPreview(); });
+        el('#wedToggle').addEventListener('change', e=>{ tplState.wedToggle=e.target.checked; saveAll(); buildPreview(); });
+        el('#wedStrategy').addEventListener('change', e=>{ tplState.wedStrategy=e.target.value; saveAll(); buildPreview(); });
+        el('#wedCount').addEventListener('change', e=>{ tplState.wedCount=Number(e.target.value); saveAll(); buildPreview(); });
+        el('#wedMergeMode').addEventListener('change', e=>{ tplState.wedMergeMode=e.target.value; saveAll(); buildPreview(); });
+        el('#friToggle').addEventListener('change', e=>{ tplState.friToggle=e.target.checked; saveAll(); buildPreview(); });
+        el('#friStrategy').addEventListener('change', e=>{ tplState.friStrategy=e.target.value; saveAll(); buildPreview(); });
+        el('#friCount').addEventListener('change', e=>{ tplState.friCount=Number(e.target.value); saveAll(); buildPreview(); });
+        el('#friMergeMode').addEventListener('change', e=>{ tplState.friMergeMode=e.target.value; saveAll(); buildPreview(); });
+        el('#monthThemeName').addEventListener('input', e=>{ themeState.name=e.target.value; saveAll(); buildPreview(); });
+        el('#monthThemeMode').addEventListener('change', e=>{ themeState.mode=e.target.value; saveAll(); buildPreview(); });
+        el('#monthThemeStyle').addEventListener('change', e=>{ themeState.style=e.target.value; saveAll(); buildPreview(); });
+        el('#rotateToggle').addEventListener('change', e=>{ rotateState.enabled=e.target.checked; saveAll(); buildPreview(); });
+        el('#applyCurrentMonth').addEventListener('click', ()=>{ themeState.name=rotateState[new Date().getMonth()+1]||''; saveAll(); bindInputs(); buildPreview(); });
+        document.querySelectorAll('#weekdayFilters input[type=checkbox]').forEach(cb=> cb.addEventListener('change', buildPreview));
+        el('#wdWeFilter').addEventListener('change', buildPreview);
+        el('#modeFilter').addEventListener('change', buildPreview);
+        document.querySelectorAll('#taskFilters input[type=checkbox]').forEach(cb=> cb.addEventListener('change', buildPreview));
+        el('#exportICS').addEventListener('click', exportICS);
+        el('#exportCSV').addEventListener('click', exportCSV);
+        document.querySelectorAll('.tag-btn').forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            const tag=btn.getAttribute('data-quick-tag');
+            if(tag==='信息型'){ tplState.kwStrategy='tag:信息型'; }
+            if(tag==='冲突'){ tplState.kwStrategy='tag:冲突'; }
+            if(tag==='治愈'){ tplState.kwStrategy='tag:治愈'; }
+            if(tag==='风格'){ tplState.kwStrategy='tag:风格'; }
+            saveAll(); bindInputs(); buildPreview();
+          });
+        });
+        el('#previewCSV').addEventListener('click', previewCSVHandler);
+        el('#applyToLex').addEventListener('click', applyToLexicon);
+        el('#applyToPlan').addEventListener('click', applyToPlanDrafts);
+        el('#reloadDrafts').addEventListener('click', renderDrafts);
+        el('#clearDrafts').addEventListener('click', ()=>{ if(confirm('确认清空草案？')){ writeDrafts([]); renderDrafts(); } });
+        el('#snapShot').addEventListener('click', ()=>{ pushSnapshot({ dayListHTML:document.getElementById('dayList').innerHTML, drafts:readDrafts() }); alert('已保存快照（最多保留3级）。'); });
+        el('#undoApply').addEventListener('click', ()=>{ const level=Number(document.getElementById('undoLevel').value||1); const data=popSnapshot(level); if(!data){ alert('没有可撤销的快照'); return; } document.getElementById('dayList').innerHTML=data.dayListHTML; writeDrafts(data.drafts||[]); renderDrafts(); alert('已回滚。'); });
+        el('#selAll').addEventListener('click', ()=>{ const drafts=readDrafts(); drafts.forEach(d=> d.selected=true); writeDrafts(drafts); renderDrafts(); });
+        el('#selNone').addEventListener('click', ()=>{ const drafts=readDrafts(); drafts.forEach(d=> d.selected=false); writeDrafts(drafts); renderDrafts(); });
+        el('#selReverse').addEventListener('click', ()=>{ const drafts=readDrafts(); drafts.forEach(d=> d.selected=!d.selected); writeDrafts(drafts); renderDrafts(); });
+        el('#mergeSep').addEventListener('change', ()=>{ const v=el('#mergeSep').value; el('#mergeSepCustom').style.display=(v==='custom')?'inline-block':'none'; });
+        el('#previewApply').addEventListener('click', previewApplyDiff);
+        el('#applyDrafts').addEventListener('click', applySelectedDrafts);
+        el('#simulateSchedule').addEventListener('click', previewSuggestions);
+        el('#applyScheduleAll').addEventListener('click', ()=> applySuggestionsCore(()=>true));
+        el('#applyScheduleThresh').addEventListener('click', ()=>{ const thresh=Number(document.getElementById('scoreThresh').value||3); applySuggestionsCore(s=> s.score>=thresh); });
+        el('#smartDailyLimit').value='1';
+      }
+      function renderRotateGrid(){
+        const grid=document.getElementById('themeGrid'); grid.innerHTML='';
+        for(let m=1;m<=12;m++){
+          const cell=document.createElement('div'); cell.className='cell';
+          cell.innerHTML=`<div class="soft">第 ${m} 月</div><input data-month="${m}" value="${rotateState[m] || ''}" style="width:100%; margin-top:6px; padding:6px;" />`;
+          grid.appendChild(cell);
+        }
+        grid.querySelectorAll('input').forEach(inp=>{
+          inp.addEventListener('input', e=>{
+            const idx=e.target.getAttribute('data-month');
+            rotateState[idx]=e.target.value;
+            localStorage.setItem(ROTATEKEY, JSON.stringify(rotateState));
+            buildPreview();
+          });
+        });
+      }
+      function init(){
+        initDefaults(); bindInputs(); renderWeek(); buildPreview(); renderDrafts();
+        document.querySelectorAll('.tab').forEach(t=>{
+          t.addEventListener('click', ()=>{
+            document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p=> p.style.display='none');
+            const id=t.getAttribute('data-tab'); const pane=document.getElementById(id);
+            if(pane) pane.style.display='block';
+            t.classList.add('active');
+          });
+        });
+      }
+      document.addEventListener('DOMContentLoaded', init);
+      // 暴露工具按钮未挂载的函数（避免未引用报错）
+      window.previewApplyDiff=previewApplyDiff;
+      window.applySelectedDrafts=applySelectedDrafts;
+      window.dedupTitle=dedupByTitle;
+      window.extractKeywords=extractAndMergeKeywordsFromDrafts;
+    </script>
+    <!-- 你的额外依赖 -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  </body>
+  </html>
